@@ -164,11 +164,36 @@ const retrieveSavedCart = async () => {
   }
 };
 
+// Edge case tests
+const chaosMonkeyTests = async () => {
+  try {
+    // Test invalid product creation
+    await axios.post(`${baseURL}/products`, { name: '', price: -100, stock: -10 });
+
+    // Test adding non-existent product to cart
+    await axios.post(`${baseURL}/cart/product`, { productId: 'nonexistentproduct', quantity: 1 });
+
+    // Test removing non-existent product from cart
+    await axios.delete(`${baseURL}/cart/product`, { data: { productId: 'nonexistentproduct' } });
+
+    // Test updating quantity of non-existent product in cart
+    await axios.put(`${baseURL}/cart/product`, { productId: 'nonexistentproduct', quantity: 5 });
+
+    // Test invalid discount code
+    await applyDiscount('INVALIDCODE');
+
+    // Test invalid login
+    await axios.post(`${baseURL}/users/login`, { username: 'invaliduser', password: 'invalidpassword' });
+  } catch (error) {
+    console.error('Chaos monkey test error:', error.response ? error.response.data : error.message);
+  }
+};
+
 const runTests = async () => {
   setupAxios();
   await registerUser();
   await loginUser();
-  
+
   productId = await createProduct('Test Product 1', 100, 10);
   productId2 = await createProduct('Test Product 2', 200, 5);
 
@@ -176,26 +201,28 @@ const runTests = async () => {
   await getProductById(productId);
   await updateProduct(productId, 'Updated Product 1');
   await getProductById(productId);
-  
+
   await createCart();
   await addProductToCart(productId, 1);
   await addProductToCart(productId2, 2);
-  
+
   await getCartSummary();
   await updateProductQuantityInCart(productId, 3);
   await getCartSummary();
-  
+
   await saveCart();
   await emptyCart();
   await retrieveSavedCart();
-  
+
   await applyDiscount('DISCOUNT10');
-  
+
   await removeProductFromCart(productId);
   await getCartSummary();
-  
+
   await deleteProduct(productId);
   await deleteProduct(productId2);
+
+  await chaosMonkeyTests();
 };
 
 runTests();
