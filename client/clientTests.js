@@ -5,7 +5,6 @@ const userCredentials = { username: 'testuser', password: 'password' };
 let token;
 let productId;
 let productId2;
-let cartId;
 
 const setupAxios = () => {
   axios.interceptors.request.use(config => {
