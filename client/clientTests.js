@@ -163,25 +163,13 @@ const retrieveSavedCart = async () => {
   }
 };
 
-// Edge case tests
 const chaosMonkeyTests = async () => {
   try {
-    // Test invalid product creation
     await axios.post(`${baseURL}/products`, { name: '', price: -100, stock: -10 });
-
-    // Test adding non-existent product to cart
     await axios.post(`${baseURL}/cart/product`, { productId: 'nonexistentproduct', quantity: 1 });
-
-    // Test removing non-existent product from cart
     await axios.delete(`${baseURL}/cart/product`, { data: { productId: 'nonexistentproduct' } });
-
-    // Test updating quantity of non-existent product in cart
     await axios.put(`${baseURL}/cart/product`, { productId: 'nonexistentproduct', quantity: 5 });
-
-    // Test invalid discount code
     await applyDiscount('INVALIDCODE');
-
-    // Test invalid login
     await axios.post(`${baseURL}/users/login`, { username: 'invaliduser', password: 'invalidpassword' });
   } catch (error) {
     console.error('Chaos monkey test error:', error.response ? error.response.data : error.message);
