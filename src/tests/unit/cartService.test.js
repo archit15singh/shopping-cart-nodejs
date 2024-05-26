@@ -9,24 +9,19 @@ describe('CartService', () => {
   });
 
   it('should create a new cart', async () => {
-    const mockSave = jest.fn().mockResolvedValue({ _id: '1', userId: '123', products: [] });
-    Cart.mockImplementation(() => ({ save: mockSave }));
+    const mockCart = { _id: '1', userId: '123', products: [], save: jest.fn().mockResolvedValue(true) };
+    Cart.mockImplementation(() => mockCart);
 
     const cart = await CartService.createCart('123');
 
-    expect(cart).toHaveProperty('_id');
+    expect(cart).toHaveProperty('_id', '1');
     expect(cart).toHaveProperty('userId', '123');
     expect(cart.products).toEqual([]);
   });
 
   it('should add a product to the cart', async () => {
-    const mockSave = jest.fn();
-    const mockFindOne = jest.fn().mockResolvedValue({
-      userId: '123',
-      products: [],
-      save: mockSave
-    });
-    Cart.findOne = mockFindOne;
+    const mockCart = { userId: '123', products: [], save: jest.fn().mockResolvedValue(true) };
+    Cart.findOne = jest.fn().mockResolvedValue(mockCart);
 
     const cart = await CartService.addProductToCart('123', '456', 1);
 
@@ -36,13 +31,8 @@ describe('CartService', () => {
   });
 
   it('should remove a product from the cart', async () => {
-    const mockSave = jest.fn();
-    const mockFindOne = jest.fn().mockResolvedValue({
-      userId: '123',
-      products: [{ productId: '456', quantity: 1 }],
-      save: mockSave
-    });
-    Cart.findOne = mockFindOne;
+    const mockCart = { userId: '123', products: [{ productId: '456', quantity: 1 }], save: jest.fn().mockResolvedValue(true) };
+    Cart.findOne = jest.fn().mockResolvedValue(mockCart);
 
     const cart = await CartService.removeProductFromCart('123', '456');
 
@@ -50,13 +40,8 @@ describe('CartService', () => {
   });
 
   it('should update product quantity in the cart', async () => {
-    const mockSave = jest.fn();
-    const mockFindOne = jest.fn().mockResolvedValue({
-      userId: '123',
-      products: [{ productId: '456', quantity: 1 }],
-      save: mockSave
-    });
-    Cart.findOne = mockFindOne;
+    const mockCart = { userId: '123', products: [{ productId: '456', quantity: 1 }], save: jest.fn().mockResolvedValue(true) };
+    Cart.findOne = jest.fn().mockResolvedValue(mockCart);
 
     const cart = await CartService.updateProductQuantity('123', '456', 5);
 

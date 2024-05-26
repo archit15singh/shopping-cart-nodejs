@@ -1,7 +1,5 @@
-jest.setTimeout(30000);
-
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
 dotenv.config();
 

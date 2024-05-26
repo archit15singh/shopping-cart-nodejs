@@ -11,7 +11,7 @@ class CartService {
     const cart = await Cart.findOne({ userId });
     if (!cart) throw new Error('Cart not found');
 
-    const productIndex = cart.products.findIndex(p => p.productId.equals(productId));
+    const productIndex = cart.products.findIndex(p => p.productId.toString() === productId.toString());
     if (productIndex > -1) {
       cart.products[productIndex].quantity += quantity;
     } else {
@@ -26,7 +26,7 @@ class CartService {
     const cart = await Cart.findOne({ userId });
     if (!cart) throw new Error('Cart not found');
 
-    cart.products = cart.products.filter(p => !p.productId.equals(productId));
+    cart.products = cart.products.filter(p => p.productId.toString() !== productId.toString());
     await cart.save();
     return cart;
   }
@@ -35,7 +35,7 @@ class CartService {
     const cart = await Cart.findOne({ userId });
     if (!cart) throw new Error('Cart not found');
 
-    const productIndex = cart.products.findIndex(p => p.productId.equals(productId));
+    const productIndex = cart.products.findIndex(p => p.productId.toString() === productId.toString());
     if (productIndex > -1) {
       cart.products[productIndex].quantity = quantity;
     } else {

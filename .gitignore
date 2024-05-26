@@ -131,3 +131,5 @@ dist
 node_modules
 .env
 coverage
+*.txt
+*.py
