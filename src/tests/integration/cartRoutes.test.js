@@ -31,7 +31,7 @@ describe("Cart Routes", () => {
   });
 
   beforeEach(async () => {
-    cart = await Cart.create({ userId: user._id, products: [] });
+    cart = await Cart.create({ userId: user._id, products: [{ productId: product._id, quantity: 2 }] });
   });
 
   afterEach(async () => {
