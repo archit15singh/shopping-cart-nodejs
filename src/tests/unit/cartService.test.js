@@ -1,7 +1,7 @@
-import CartService from '../../src/services/cartService.js';
-import Cart from '../../src/models/cart.js';
+import CartService from '../../services/cartService.js';
+import Cart from '../../models/cart.js';
 
-jest.mock('../../src/models/cart.js');
+jest.mock('../../models/cart.js');
 
 describe('CartService', () => {
   beforeEach(() => {
@@ -11,9 +11,9 @@ describe('CartService', () => {
   it('should create a new cart', async () => {
     const mockSave = jest.fn().mockResolvedValue({ _id: '1', userId: '123', products: [] });
     Cart.mockImplementation(() => ({ save: mockSave }));
-    
+
     const cart = await CartService.createCart('123');
-    
+
     expect(cart).toHaveProperty('_id');
     expect(cart).toHaveProperty('userId', '123');
     expect(cart.products).toEqual([]);
@@ -29,7 +29,7 @@ describe('CartService', () => {
     Cart.findOne = mockFindOne;
 
     const cart = await CartService.addProductToCart('123', '456', 1);
-    
+
     expect(cart.products).toHaveLength(1);
     expect(cart.products[0]).toHaveProperty('productId', '456');
     expect(cart.products[0]).toHaveProperty('quantity', 1);
@@ -45,7 +45,7 @@ describe('CartService', () => {
     Cart.findOne = mockFindOne;
 
     const cart = await CartService.removeProductFromCart('123', '456');
-    
+
     expect(cart.products).toHaveLength(0);
   });
 
@@ -59,7 +59,7 @@ describe('CartService', () => {
     Cart.findOne = mockFindOne;
 
     const cart = await CartService.updateProductQuantity('123', '456', 5);
-    
+
     expect(cart.products).toHaveLength(1);
     expect(cart.products[0]).toHaveProperty('quantity', 5);
   });

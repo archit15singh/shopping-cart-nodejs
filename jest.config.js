@@ -1,8 +1,9 @@
 export default {
   testEnvironment: 'node',
   coverageDirectory: 'coverage',
-  setupFilesAfterEnv: ['./src/tests/setup.js'],
-  testMatch: ['**/tests/**/*.test.js'],
+  setupFilesAfterEnv: ['<rootDir>/src/tests/setup.js'],
+  testMatch: ['<rootDir>/src/tests/**/*.test.js'],
+  moduleDirectories: ['node_modules', '<rootDir>/src'],
   transform: {
     '^.+\\.js$': 'babel-jest',
   },

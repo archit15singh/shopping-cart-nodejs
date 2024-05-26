@@ -1,8 +1,8 @@
 import request from 'supertest';
-import app from '../../src/app.js';
+import app from '../../app.js';
 import mongoose from 'mongoose';
-import Cart from '../../src/models/cart.js';
-import User from '../../src/models/user.js';
+import Cart from '../../models/cart.js';
+import User from '../../models/user.js';
 import Product from '../../src/models/product.js';
 import jwt from 'jsonwebtoken';
 

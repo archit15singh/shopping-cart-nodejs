@@ -1,7 +1,7 @@
 import request from 'supertest';
-import app from '../../src/app.js';
+import app from '../../app.js';
 import mongoose from 'mongoose';
-import Product from '../../src/models/product.js';
+import Product from '../../models/product.js';
 
 describe('Product Routes', () => {
   beforeAll(async () => {
