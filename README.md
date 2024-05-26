@@ -384,9 +384,7 @@ Located in `src/tests/integration`.
 Located in `client/clientTests.js`.
 - **Register User**
 - **Login User**
-- **Create
-
- Product**
+- **Create Product**
 - **Get All Products**
 - **Get Product by ID**
 - **Update Product**
