@@ -36,6 +36,9 @@ class CartService {
   }
 
   static async updateProductQuantity(userId, productId, quantity) {
+    if (quantity <= 0) {
+      throw new Error("Invalid quantity");
+    }
     const cart = await Cart.findOne({ userId });
     if (!cart) throw new Error("Cart not found");
 

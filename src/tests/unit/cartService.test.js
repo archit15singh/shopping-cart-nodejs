@@ -93,13 +93,16 @@ describe("CartService", () => {
   it("should handle invalid product quantity gracefully", async () => {
     const mockCart = {
       userId: "123",
-      products: [{ productId: "456", quantity: 1 }],
-      save: jest.fn().mockResolvedValue(true),
+      products: [{ productId: "456", quantity: -1 }],
+      save: jest.fn(),
     };
+    
     Cart.findOne = jest.fn().mockResolvedValue(mockCart);
-
+  
     await expect(
-      CartService.updateProductQuantity("123", "456", -1),
+      CartService.updateProductQuantity("123", "456", -1)
     ).rejects.toThrow("Invalid quantity");
   });
+  
+
 });
