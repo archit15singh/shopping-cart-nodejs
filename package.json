@@ -9,19 +9,19 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "dotenv": "^10.0.0",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^5.13.22",
-    "dotenv": "^10.0.0"
+    "mongoose": "^5.13.22"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "babel-jest": "^26.6.3",
     "jest": "^26.6.3",
     "nodemon": "^3.1.1",
-    "supertest": "^6.3.4",
-    "@babel/core": "^7.15.0",
-    "@babel/preset-env": "^7.15.0",
-    "@babel/plugin-transform-modules-commonjs": "^7.15.0",
-    "babel-jest": "^26.6.3"
+    "supertest": "^6.3.4"
   },
   "description": "refresh on nodejs by building a shopping cart using TDD",
   "keywords": [],
