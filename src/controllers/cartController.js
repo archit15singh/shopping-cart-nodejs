@@ -8,18 +8,18 @@ class CartController {
       await cart.save();
       res.status(201).json(cart);
     } catch (error) {
+      console.error("Error creating cart:", error.message);
       res.status(500).json({ error: error.message });
     }
   }
 
   static async getUserCart(req, res) {
     try {
-      const cart = await Cart.findOne({ userId: req.user.id }).populate(
-        "products.productId",
-      );
+      const cart = await Cart.findOne({ userId: req.user.id }).populate("products.productId");
       if (!cart) return res.status(404).json({ message: "Cart not found" });
       res.json(cart);
     } catch (error) {
+      console.error("Error getting user cart:", error.message);
       res.status(500).json({ error: error.message });
     }
   }
@@ -30,11 +30,9 @@ class CartController {
       const cart = await Cart.findOne({ userId: req.user.id });
       if (!cart) return res.status(404).json({ message: "Cart not found" });
 
-      const productIndex = cart.products.findIndex((p) =>
-        p.productId.equals(productId),
-      );
+      const productIndex = cart.products.findIndex((p) => p.productId.equals(productId));
       if (productIndex > -1) {
-        cart.products[productIndex].quantity += quantity;
+        cart.products[productIndex].quantity = quantity;
       } else {
         cart.products.push({ productId, quantity });
       }
@@ -42,6 +40,7 @@ class CartController {
       await cart.save();
       res.status(200).json(cart);
     } catch (error) {
+      console.error("Error adding product to cart:", error.message);
       res.status(500).json({ error: error.message });
     }
   }
@@ -52,12 +51,11 @@ class CartController {
       const cart = await Cart.findOne({ userId: req.user.id });
       if (!cart) return res.status(404).json({ message: "Cart not found" });
 
-      cart.products = cart.products.filter(
-        (p) => !p.productId.equals(productId),
-      );
+      cart.products = cart.products.filter((p) => !p.productId.equals(productId));
       await cart.save();
       res.status(200).json(cart);
     } catch (error) {
+      console.error("Error removing product from cart:", error.message);
       res.status(500).json({ error: error.message });
     }
   }
@@ -65,12 +63,12 @@ class CartController {
   static async updateProductQuantity(req, res) {
     try {
       const { productId, quantity } = req.body;
+      if (quantity <= 0) return res.status(400).json({ message: "Invalid quantity" });
+
       const cart = await Cart.findOne({ userId: req.user.id });
       if (!cart) return res.status(404).json({ message: "Cart not found" });
 
-      const productIndex = cart.products.findIndex((p) =>
-        p.productId.equals(productId),
-      );
+      const productIndex = cart.products.findIndex((p) => p.productId.equals(productId));
       if (productIndex > -1) {
         cart.products[productIndex].quantity = quantity;
       } else {
@@ -80,28 +78,22 @@ class CartController {
       await cart.save();
       res.status(200).json(cart);
     } catch (error) {
+      console.error("Error updating product quantity in cart:", error.message);
       res.status(500).json({ error: error.message });
     }
   }
 
   static async getCartSummary(req, res) {
     try {
-      const cart = await Cart.findOne({ userId: req.user.id }).populate(
-        "products.productId",
-      );
+      const cart = await Cart.findOne({ userId: req.user.id }).populate("products.productId");
       if (!cart) return res.status(404).json({ message: "Cart not found" });
 
-      const itemCount = cart.products.reduce(
-        (acc, item) => acc + item.quantity,
-        0,
-      );
-      const totalPrice = cart.products.reduce(
-        (acc, item) => acc + item.productId.price * item.quantity,
-        0,
-      );
+      const itemCount = cart.products.reduce((acc, item) => acc + item.quantity, 0);
+      const totalPrice = cart.products.reduce((acc, item) => acc + item.productId.price * item.quantity, 0);
 
       res.json({ itemCount, totalPrice });
     } catch (error) {
+      console.error("Error getting cart summary:", error.message);
       res.status(500).json({ error: error.message });
     }
   }
@@ -115,6 +107,7 @@ class CartController {
       await cart.save();
       res.status(200).json({ message: "Cart emptied successfully" });
     } catch (error) {
+      console.error("Error emptying cart:", error.message);
       res.status(500).json({ error: error.message });
     }
   }
@@ -122,26 +115,20 @@ class CartController {
   static async applyDiscount(req, res) {
     try {
       const { code } = req.body;
-      const cart = await Cart.findOne({ userId: req.user.id }).populate(
-        "products.productId",
-      );
+      const cart = await Cart.findOne({ userId: req.user.id }).populate("products.productId");
 
       if (!cart) return res.status(404).json({ message: "Cart not found" });
 
       const discount = discountCodes[code] || 0;
       const discountApplied = !!discount;
-      const totalPrice =
-        cart.products.reduce(
-          (acc, item) => acc + item.productId.price * item.quantity,
-          0,
-        ) *
-        (1 - discount);
+      const totalPrice = cart.products.reduce((acc, item) => acc + item.productId.price * item.quantity, 0) * (1 - discount);
 
       cart.discountCode = discountApplied ? code : null;
       await cart.save();
 
       res.json({ discountApplied, totalPrice });
     } catch (error) {
+      console.error("Error applying discount code:", error.message);
       res.status(500).json({ error: error.message });
     }
   }
@@ -156,6 +143,7 @@ class CartController {
 
       res.status(200).json({ message: "Cart saved successfully" });
     } catch (error) {
+      console.error("Error saving cart:", error.message);
       res.status(500).json({ error: error.message });
     }
   }
@@ -170,6 +158,7 @@ class CartController {
 
       res.status(200).json({ cart });
     } catch (error) {
+      console.error("Error retrieving saved cart:", error.message);
       res.status(500).json({ error: error.message });
     }
   }

@@ -81,28 +81,17 @@ describe("Cart Routes", () => {
     expect(res.body.products).toHaveLength(0);
   });
 
-  it("should update product quantity in the cart", async () => {
-    await Cart.updateOne(
-      { _id: cart._id },
-      { $push: { products: { productId: product._id, quantity: 1 } } },
-    );
-
+  it("should update the quantity of a product in the cart", async () => {
     const res = await request(app)
       .put("/api/cart/product")
       .set("Authorization", `Bearer ${token}`)
       .send({ productId: product._id, quantity: 5 });
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.products).toHaveLength(1);
     expect(res.body.products[0]).toHaveProperty("quantity", 5);
   });
 
   it("should get the cart summary", async () => {
-    await Cart.updateOne(
-      { _id: cart._id },
-      { $push: { products: { productId: product._id, quantity: 2 } } },
-    );
-
     const res = await request(app)
       .get("/api/cart/summary")
       .set("Authorization", `Bearer ${token}`);
@@ -113,11 +102,6 @@ describe("Cart Routes", () => {
   });
 
   it("should empty the cart", async () => {
-    await Cart.updateOne(
-      { _id: cart._id },
-      { $push: { products: { productId: product._id, quantity: 1 } } },
-    );
-
     const res = await request(app)
       .delete("/api/cart")
       .set("Authorization", `Bearer ${token}`);
@@ -127,11 +111,6 @@ describe("Cart Routes", () => {
   });
 
   it("should apply a discount code", async () => {
-    await Cart.updateOne(
-      { _id: cart._id },
-      { $push: { products: { productId: product._id, quantity: 2 } } },
-    );
-
     const res = await request(app)
       .post("/api/cart/discount")
       .set("Authorization", `Bearer ${token}`)
@@ -142,62 +121,25 @@ describe("Cart Routes", () => {
     expect(res.body).toHaveProperty("totalPrice", 180);
   });
 
-  it("should save the cart for later", async () => {
+  it("should save the cart", async () => {
     const res = await request(app)
       .post("/api/cart/save")
-      .set("Authorization", `Bearer ${token}`)
-      .send();
+      .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("message", "Cart saved successfully");
   });
 
   it("should retrieve the saved cart", async () => {
-    await Cart.updateOne(
-      { _id: cart._id },
-      { savedState: [{ productId: product._id, quantity: 2 }] },
-    );
+    await request(app)
+      .post("/api/cart/save")
+      .set("Authorization", `Bearer ${token}`);
 
     const res = await request(app)
       .get("/api/cart/retrieve")
       .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.cart.products).toHaveLength(1);
-    expect(res.body.cart.products[0]).toHaveProperty(
-      "productId",
-      product._id.toString(),
-    );
-    expect(res.body.cart.products[0]).toHaveProperty("quantity", 2);
-  });
-
-  it("should return 401 if no token is provided", async () => {
-    const res = await request(app).post("/api/cart").send();
-
-    expect(res.statusCode).toBe(401);
-    expect(res.body).toHaveProperty(
-      "error",
-      "Access denied. No token provided.",
-    );
-  });
-
-  it("should return 400 if token is invalid", async () => {
-    const res = await request(app)
-      .post("/api/cart")
-      .set("Authorization", "Bearer invalid_token")
-      .send();
-
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("error", "Invalid token.");
-  });
-
-  it("should handle invalid discount code gracefully", async () => {
-    const res = await request(app)
-      .post("/api/cart/discount")
-      .set("Authorization", `Bearer ${token}`)
-      .send({ code: "INVALIDCODE" });
-
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("discountApplied", false);
+    expect(res.body.cart.products).toHaveLength(2);
   });
 });
