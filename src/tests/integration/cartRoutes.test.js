@@ -3,7 +3,7 @@ import app from '../../app.js';
 import mongoose from 'mongoose';
 import Cart from '../../models/cart.js';
 import User from '../../models/user.js';
-import Product from '../../src/models/product.js';
+import Product from '../../models/product.js';
 import jwt from 'jsonwebtoken';
 
 describe('Cart Routes', () => {
