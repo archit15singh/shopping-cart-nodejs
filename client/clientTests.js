@@ -85,7 +85,6 @@ const deleteProduct = async (id) => {
 const createCart = async () => {
   try {
     const response = await axios.post(`${baseURL}/cart`);
-    cartId = response.data._id;
     console.log('Cart creation response:', response.data);
   } catch (error) {
     console.error('Error creating cart:', error.response.data);
