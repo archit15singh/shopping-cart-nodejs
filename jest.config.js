@@ -3,4 +3,7 @@ export default {
   coverageDirectory: 'coverage',
   setupFilesAfterEnv: ['./src/tests/setup.js'],
   testMatch: ['**/tests/**/*.test.js'],
+  transform: {
+    '^.+\\.js$': 'babel-jest',
+  },
 };
