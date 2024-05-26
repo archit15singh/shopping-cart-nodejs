@@ -14,6 +14,7 @@ describe("Cart Routes", () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+    await User.deleteMany({});
     user = await User.create({ username: "testuser", password: "password" });
     token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
@@ -31,6 +32,7 @@ describe("Cart Routes", () => {
   });
 
   beforeEach(async () => {
+    await Cart.deleteMany({});
     cart = await Cart.create({ userId: user._id, products: [{ productId: product._id, quantity: 2 }] });
   });
 
@@ -140,6 +142,6 @@ describe("Cart Routes", () => {
       .set("Authorization", `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
-    expect(res.body.cart.products).toHaveLength(2);
+    expect(res.body.cart.products).toHaveLength(1);
   });
 });
