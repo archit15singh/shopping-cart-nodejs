@@ -30,7 +30,7 @@ describe('Cart Routes', () => {
   });
 
   it('should create a new cart', async () => {
-    await Cart.deleteMany({}); // Ensure no carts exist
+    await Cart.deleteMany({});
     const res = await request(app)
       .post('/api/cart')
       .set('Authorization', `Bearer ${token}`)
@@ -127,7 +127,7 @@ describe('Cart Routes', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('discountApplied', true);
-    expect(res.body).toHaveProperty('totalPrice', 180); // 200 * 0.9 = 180
+    expect(res.body).toHaveProperty('totalPrice', 180);
   });
 
   it('should save the cart for later', async () => {

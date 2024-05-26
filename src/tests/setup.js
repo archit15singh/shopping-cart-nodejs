@@ -15,7 +15,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
-    // Close the mongoose connection
     await mongoose.connection.close();
   } catch (error) {
     console.error('Error closing MongoDB connection:', error);
