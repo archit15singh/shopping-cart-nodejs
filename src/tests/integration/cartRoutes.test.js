@@ -7,7 +7,7 @@ import Product from '../../models/product.js';
 import jwt from 'jsonwebtoken';
 
 describe('Cart Routes', () => {
-  let user, token, product;
+  let user, token, product, cart;
 
   beforeAll(async () => {
     await mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -21,7 +21,16 @@ describe('Cart Routes', () => {
     await mongoose.disconnect();
   });
 
+  beforeEach(async () => {
+    cart = await Cart.create({ userId: user._id, products: [] });
+  });
+
+  afterEach(async () => {
+    await Cart.deleteMany({});
+  });
+
   it('should create a new cart', async () => {
+    await Cart.deleteMany({}); // Ensure no carts exist
     const res = await request(app)
       .post('/api/cart')
       .set('Authorization', `Bearer ${token}`)
@@ -46,7 +55,10 @@ describe('Cart Routes', () => {
   });
 
   it('should remove a product from the cart', async () => {
-    const cart = await Cart.create({ userId: user._id, products: [{ productId: product._id, quantity: 1 }] });
+    await Cart.updateOne(
+      { _id: cart._id },
+      { $push: { products: { productId: product._id, quantity: 1 } } }
+    );
 
     const res = await request(app)
       .delete('/api/cart/product')
@@ -58,7 +70,10 @@ describe('Cart Routes', () => {
   });
 
   it('should update product quantity in the cart', async () => {
-    const cart = await Cart.create({ userId: user._id, products: [{ productId: product._id, quantity: 1 }] });
+    await Cart.updateOne(
+      { _id: cart._id },
+      { $push: { products: { productId: product._id, quantity: 1 } } }
+    );
 
     const res = await request(app)
       .put('/api/cart/product')
@@ -71,7 +86,10 @@ describe('Cart Routes', () => {
   });
 
   it('should get the cart summary', async () => {
-    const cart = await Cart.create({ userId: user._id, products: [{ productId: product._id, quantity: 2 }] });
+    await Cart.updateOne(
+      { _id: cart._id },
+      { $push: { products: { productId: product._id, quantity: 2 } } }
+    );
 
     const res = await request(app)
       .get('/api/cart/summary')
@@ -83,7 +101,10 @@ describe('Cart Routes', () => {
   });
 
   it('should empty the cart', async () => {
-    const cart = await Cart.create({ userId: user._id, products: [{ productId: product._id, quantity: 1 }] });
+    await Cart.updateOne(
+      { _id: cart._id },
+      { $push: { products: { productId: product._id, quantity: 1 } } }
+    );
 
     const res = await request(app)
       .delete('/api/cart')
@@ -94,7 +115,10 @@ describe('Cart Routes', () => {
   });
 
   it('should apply a discount code', async () => {
-    const cart = await Cart.create({ userId: user._id, products: [{ productId: product._id, quantity: 1 }] });
+    await Cart.updateOne(
+      { _id: cart._id },
+      { $push: { products: { productId: product._id, quantity: 2 } } }
+    );
 
     const res = await request(app)
       .post('/api/cart/discount')
@@ -103,12 +127,10 @@ describe('Cart Routes', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('discountApplied', true);
-    expect(res.body).toHaveProperty('totalPrice', 90);
+    expect(res.body).toHaveProperty('totalPrice', 180); // 200 * 0.9 = 180
   });
 
   it('should save the cart for later', async () => {
-    const cart = await Cart.create({ userId: user._id, products: [{ productId: product._id, quantity: 1 }] });
-
     const res = await request(app)
       .post('/api/cart/save')
       .set('Authorization', `Bearer ${token}`)
@@ -119,7 +141,10 @@ describe('Cart Routes', () => {
   });
 
   it('should retrieve the saved cart', async () => {
-    const cart = await Cart.create({ userId: user._id, products: [{ productId: product._id, quantity: 1 }], savedState: [{ productId: product._id, quantity: 1 }] });
+    await Cart.updateOne(
+      { _id: cart._id },
+      { savedState: [{ productId: product._id, quantity: 2 }] }
+    );
 
     const res = await request(app)
       .get('/api/cart/retrieve')
@@ -128,7 +153,7 @@ describe('Cart Routes', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.cart.products).toHaveLength(1);
     expect(res.body.cart.products[0]).toHaveProperty('productId', product._id.toString());
-    expect(res.body.cart.products[0]).toHaveProperty('quantity', 1);
+    expect(res.body.cart.products[0]).toHaveProperty('quantity', 2);
   });
 
   it('should return 401 if no token is provided', async () => {

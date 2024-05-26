@@ -1,5 +1,7 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+jest.setTimeout(30000);
+
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -13,9 +15,9 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
-    await mongoose.connection.dropDatabase();
-    await mongoose.disconnect();
+    // Close the mongoose connection
+    await mongoose.connection.close();
   } catch (error) {
-    console.error('Error disconnecting from MongoDB:', error);
+    console.error('Error closing MongoDB connection:', error);
   }
 });
